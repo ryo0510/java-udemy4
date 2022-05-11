@@ -38,5 +38,54 @@ public class SurveyController {
 		return "survey/index";
 	}
 	
+	@GetMapping("/form")
+	public String form(SurveyForm surveyForm, Model model, @ModelAttribute("complete") String complete) {
+		model.addAttribute("title", "Servey Form");
+		return "survey/form";
+	}
+	
+	@PostMapping("/form")
+	public String form(SurveyForm surveyForm, Model model) {
+		model.addAttribute("title", "Servey Form");
+		return "survey/form";
+	}
+	
+	
+	@PostMapping("/confirm")
+	public String confirm(
+			@Valid @ModelAttribute SurveyForm surveyForm,
+	        BindingResult result,
+	        Model model) {
+		model.addAttribute("surveyForm", surveyForm);
+		if(result.hasErrors()) {
+			model.addAttribute("title", "Survey Form");
+			return "survey/form";
+		}
+		model.addAttribute("title", "Confirm Page");
+		return "survey/confirm";
+	}
+	
+	@PostMapping("/complete")
+	public String complete(
+			@Valid @ModelAttribute SurveyForm surveyForm,
+	        BindingResult result,
+	        Model model,
+	        RedirectAttributes redirectAttributes) {
+		
+		if(result.hasErrors()) {
+			model.addAttribute("title", "Survey Form");
+			return "survey/form";
+		}
+		
+		Survey survey = new Survey();
+		survey.setAge(surveyForm.getAge());
+		survey.setSatisfaction(surveyForm.getSatisfaction());
+		survey.setComment(surveyForm.getComment());
+		survey.setCreated(LocalDateTime.now());
+		
+		surveyService.save(survey);
+		redirectAttributes.addFlashAttribute("complete", "Completed!");
+		return "redirect:/survey/form?complete";
+	}
 	
 }
