@@ -9,5 +9,4 @@ public interface InquiryDao {
 	void insertInquiry(Inquiry inquiry);
 	
 	List<Inquiry> getAll();
-
 }
